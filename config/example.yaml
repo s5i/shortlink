@@ -1,0 +1,5 @@
+hostname: "localhost:3000"
+oauth_client_id: "<google app id here>.apps.googleusercontent.com"
+oauth_client_secret: "<google app secret here>"
+jwt_secret: "<your secret here>"
+jwt_ttl: "24h"
