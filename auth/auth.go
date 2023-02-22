@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,10 +18,11 @@ type Auth struct {
 	jwtCookieName string
 }
 
-// New instantiates an Auth object.
-// For the OAuth workflow to work properly, register the object against HTTP mux (matching redirectURL).
-func New(clientID, clientSecret, jwtSecret string, jwtTTL time.Duration, redirectURL string) *Auth {
-	return &Auth{
+// New instantiates an Auth object and registers it against provided http.ServeMux.
+func New(clientID, clientSecret, jwtSecret string, jwtTTL time.Duration, hostname string, mux *http.ServeMux) *Auth {
+	redirectPath := "/auth/callback"
+	redirectURL := fmt.Sprintf("http://%s%s", hostname, redirectPath)
+	auth := &Auth{
 		oAuthCfg: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -33,6 +35,8 @@ func New(clientID, clientSecret, jwtSecret string, jwtTTL time.Duration, redirec
 		jwtTTL:        jwtTTL,
 		jwtCookieName: "token",
 	}
+	mux.Handle(redirectPath, auth)
+	return auth
 }
 
 // ServeHTTP serves OAuth callback page.
