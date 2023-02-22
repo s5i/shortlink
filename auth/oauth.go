@@ -30,7 +30,7 @@ func (a *Auth) oAuthCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	state, ok := a.oAuthInFlight[states[0]]
 	if !ok {
-		http.Error(w, "bad CSRF token", http.StatusForbidden)
+		http.Error(w, "bad CSRF token", http.StatusUnauthorized)
 		return
 	}
 
@@ -42,12 +42,16 @@ func (a *Auth) oAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 	tok, err := a.oAuthCfg.Exchange(oauth2.NoContext, codes[0])
 	if err != nil {
-		http.Error(w, "failed to exchange code for token", http.StatusForbidden)
+		http.Error(w, "failed to exchange code for token", http.StatusBadGateway)
 		return
 	}
 
 	client := a.oAuthCfg.Client(oauth2.NoContext, tok)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v1/userinfo")
+	if err != nil {
+		http.Error(w, "failed to fetch userinfo", http.StatusBadGateway)
+		return
+	}
 	defer resp.Body.Close()
 
 	dec := json.NewDecoder(resp.Body)
@@ -56,11 +60,11 @@ func (a *Auth) oAuthCallback(w http.ResponseWriter, r *http.Request) {
 		Verified bool   `json:"verified_email"`
 	}
 	if err := dec.Decode(&authInfo); err != nil {
-		http.Error(w, "failed to decode JSON response", http.StatusInternalServerError)
+		http.Error(w, "failed to decode JSON response", http.StatusBadGateway)
 		return
 	}
 	if !authInfo.Verified {
-		http.Error(w, "Google returned verified_email = False", http.StatusForbidden)
+		http.Error(w, "Google returned verified_email = False", http.StatusUnauthorized)
 		return
 	}
 
