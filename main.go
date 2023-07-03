@@ -32,12 +32,18 @@ func main() {
 	}
 	defer db.Close()
 
+	if err := db.UpdateAdmins(cfg.Admins); err != nil {
+		log.Printf("failed to update admin list: %v", err)
+		os.Exit(3)
+	}
+
 	mux := http.NewServeMux()
 
 	auth := auth.New(cfg.OAuthClientID, cfg.OAuthClientSecret, cfg.JWTSecret, cfg.JWTTTL, cfg.Hostname, mux)
 	mux.HandleFunc("/", GetLink(db, cfg.DefaultRedirectURL))
 	mux.HandleFunc("/admin/edit", EditLink(auth, db))
 	mux.HandleFunc("/admin/list", ListLinks(auth, db))
+	mux.HandleFunc("/admin/users", EditUsers(auth, db))
 
 	http.ListenAndServe(cfg.Hostname, mux)
 }

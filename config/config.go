@@ -20,6 +20,8 @@ type Config struct {
 	JWTTTL    time.Duration `yaml:"jwt_ttl"`
 
 	DefaultRedirectURL string `yaml:"default_redirect_url"`
+
+	Admins []string `yaml:"admin"`
 }
 
 // Read unmarshals a file into Config.
