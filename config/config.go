@@ -1,13 +1,18 @@
 package config
 
 import (
+	_ "embed"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"time"
 
 	"gopkg.in/yaml.v2"
 )
+
+//go:embed example.yaml
+var ExampleConfig string
 
 // Config stores configuration options for Shortlink.
 type Config struct {
@@ -40,4 +45,21 @@ func Read(path string) (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal %s: %v", path, err)
 	}
 	return cfg, nil
+}
+
+func CreateExample(path string) error {
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return fmt.Errorf("file %q already exists", path)
+	}
+
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create %q directory: %v", dir, err)
+	}
+
+	if err := ioutil.WriteFile(path, []byte(ExampleConfig), 0644); err != nil {
+		return fmt.Errorf("failed to create %q file: %v", path, err)
+	}
+
+	return nil
 }

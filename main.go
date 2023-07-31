@@ -12,12 +12,21 @@ import (
 )
 
 var (
-	dbPath     = flag.String("db_path", "shortlink.db", "Path to database file.")
-	configPath = flag.String("config_path", "shortlink.yaml", "Path to config file.")
+	dbPath       = flag.String("db_path", "shortlink.db", "Path to database file.")
+	configPath   = flag.String("config_path", "shortlink.yaml", "Path to config file.")
+	createConfig = flag.Bool("create_config", false, "If true, create example config file and exit.")
 )
 
 func main() {
 	flag.Parse()
+
+	if *createConfig {
+		if err := config.CreateExample(*configPath); err != nil {
+			log.Printf("error creating config: %v", err)
+			os.Exit(3)
+		}
+		os.Exit(0)
+	}
 
 	cfg, err := config.Read(*configPath)
 	if err != nil {
