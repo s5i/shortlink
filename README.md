@@ -17,6 +17,7 @@ Requires=network.target
 
 [Service]
 Type=simple
+WorkingDirectory=/usr/local/shortlink 
 ExecStart=/usr/local/shortlink/shortlink
 Restart=always
 
@@ -24,10 +25,11 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-sudo /usr/local/shortlink/shortlink --create_config
+cd /usr/local/shortlink
+sudo ./shortlink --create_config
 
 # Change as desired.
-sudo vim /usr/local/shortlink/config.yaml
+sudo vim ./shortlink.yaml
 
 sudo systemctl enable shortlink
 sudo systemctl start shortlink

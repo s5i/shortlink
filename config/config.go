@@ -17,6 +17,7 @@ var ExampleConfig string
 // Config stores configuration options for Shortlink.
 type Config struct {
 	Hostname string `yaml:"hostname"`
+	Listen   string `yaml:"listen"`
 
 	OAuthClientID     string `yaml:"oauth_client_id"`
 	OAuthClientSecret string `yaml:"oauth_client_secret"`

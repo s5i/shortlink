@@ -54,5 +54,8 @@ func main() {
 	mux.HandleFunc("/admin/list", ListLinks(auth, db))
 	mux.HandleFunc("/admin/users", EditUsers(auth, db))
 
-	http.ListenAndServe(cfg.Hostname, mux)
+	if err := http.ListenAndServe(cfg.Listen, mux); err != nil {
+		log.Printf("failed to listen: %v", err)
+		os.Exit(4)
+	}
 }
