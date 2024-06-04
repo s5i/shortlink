@@ -21,7 +21,7 @@ jobs:
         run: go get -u github.com/s5i/shortlink
 
       - name: Build
-        run: GOOS=linux GOARCH=amd64 go build .
+        run: GOOS=linux GOARCH=amd64 go build -tags netgo,osusergo .
 
       - name: Create Release
         id: create_release
