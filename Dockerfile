@@ -1,0 +1,18 @@
+FROM --platform=$BUILDPLATFORM golang:alpine AS build
+ARG TARGETOS TARGETARCH TAGVERSION
+
+WORKDIR /src
+COPY --from=github . .
+WORKDIR /build
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -C /src/ -o /build/shortlink.app -tags netgo,osusergo .
+
+FROM alpine
+RUN apk add bash
+COPY --from=build /src/entrypoint.sh /app/entrypoint.sh
+COPY --from=build /build/shortlink.app /app/shortlink.app
+VOLUME /cfg
+VOLUME /data
+CMD [ "/app/entrypoint.sh" ]
+
+VOLUME /appdata
+ENTRYPOINT /app/entrypoint.sh
