@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/s5i/shortlink/auth"
+	"github.com/s5i/goutil/authn"
 	"github.com/s5i/shortlink/config"
 	"github.com/s5i/shortlink/database"
 )
@@ -23,7 +23,7 @@ func main() {
 	if *createConfig {
 		if err := config.CreateExample(*configPath); err != nil {
 			log.Printf("error creating config: %v", err)
-			os.Exit(3)
+			os.Exit(1)
 		}
 		os.Exit(0)
 	}
@@ -37,25 +37,36 @@ func main() {
 	db, err := database.NewBolt(*dbPath)
 	if err != nil {
 		log.Printf("error opening database: %v", err)
-		os.Exit(2)
+		os.Exit(1)
 	}
 	defer db.Close()
 
 	if err := db.UpdateAdmins(cfg.Admins); err != nil {
 		log.Printf("failed to update admin list: %v", err)
-		os.Exit(3)
+		os.Exit(1)
 	}
 
 	mux := http.NewServeMux()
+	authn, err := authn.New(
+		authn.OptClientID(cfg.OAuthClientID),
+		authn.OptClientSecret(cfg.OAuthClientSecret),
+		authn.OptJWTTTL(cfg.JWTTTL),
+		authn.OptHostname(cfg.Hostname),
+		authn.OptMux(mux),
+		authn.OptCallbackPath("/auth/callback"),
+	)
+	if err != nil {
+		log.Printf("failed to create authn: %v", err)
+		os.Exit(1)
+	}
 
-	auth := auth.New(cfg.OAuthClientID, cfg.OAuthClientSecret, cfg.JWTSecret, cfg.JWTTTL, cfg.Hostname, mux)
 	mux.HandleFunc("/", GetLink(db, cfg.DefaultRedirectURL))
-	mux.HandleFunc("/admin/edit", EditLink(auth, db))
-	mux.HandleFunc("/admin/list", ListLinks(auth, db))
-	mux.HandleFunc("/admin/users", EditUsers(auth, db))
+	mux.HandleFunc("/admin/edit", EditLink(authn, db))
+	mux.HandleFunc("/admin/list", ListLinks(authn, db))
+	mux.HandleFunc("/admin/users", EditUsers(authn, db))
 
 	if err := http.ListenAndServe(cfg.Listen, mux); err != nil {
 		log.Printf("failed to listen: %v", err)
-		os.Exit(4)
+		os.Exit(1)
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/s5i/shortlink/auth"
+	"github.com/s5i/goutil/authn"
 	"github.com/s5i/shortlink/database"
 )
 
@@ -40,9 +40,13 @@ func GetLink(db Database, defaultURL string) http.HandlerFunc {
 	}
 }
 
-func EditLink(a *auth.Auth, db Database) http.HandlerFunc {
+func EditLink(a *authn.Authn, db Database) http.HandlerFunc {
 	return a.RequireUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := auth.User(r)
+		user, ok := a.User(r)
+		if !ok {
+			http.Error(w, "user not authenticated", http.StatusUnauthorized)
+			return
+		}
 		isUser, err := db.IsUser(user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to read user whitelist: %v", err), http.StatusInternalServerError)
@@ -102,9 +106,13 @@ func EditLink(a *auth.Auth, db Database) http.HandlerFunc {
 	}))
 }
 
-func ListLinks(a *auth.Auth, db Database) http.HandlerFunc {
+func ListLinks(a *authn.Authn, db Database) http.HandlerFunc {
 	return a.RequireUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := auth.User(r)
+		user, ok := a.User(r)
+		if !ok {
+			http.Error(w, "user not authenticated", http.StatusUnauthorized)
+			return
+		}
 		isUser, err := db.IsUser(user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to read user whitelist: %v", err), http.StatusInternalServerError)
@@ -129,9 +137,13 @@ func ListLinks(a *auth.Auth, db Database) http.HandlerFunc {
 	}))
 }
 
-func EditUsers(a *auth.Auth, db Database) http.HandlerFunc {
+func EditUsers(a *authn.Authn, db Database) http.HandlerFunc {
 	return a.RequireUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := auth.User(r)
+		user, ok := a.User(r)
+		if !ok {
+			http.Error(w, "user not authenticated", http.StatusUnauthorized)
+			return
+		}
 		isAdmin, err := db.IsAdmin(user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to read admin list: %v", err), http.StatusInternalServerError)
