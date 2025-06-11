@@ -4,7 +4,7 @@ ARG TARGETOS TARGETARCH TAGVERSION
 WORKDIR /src
 COPY --from=github . .
 WORKDIR /build
-RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -C /src/ -o /build/shortlink.app -tags netgo,osusergo .
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -C /src/ -o /build/shortlink.app -ldflags "-X 'github.com/s5i/goutil/version.External=${TAGVERSION}'" -tags netgo,osusergo .
 
 FROM alpine
 RUN apk add bash

@@ -2,11 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/s5i/goutil/authn"
+	"github.com/s5i/goutil/version"
 	"github.com/s5i/shortlink/config"
 	"github.com/s5i/shortlink/database"
 )
@@ -15,10 +17,16 @@ var (
 	dbPath       = flag.String("db_path", "shortlink.db", "Path to database file.")
 	configPath   = flag.String("config_path", "shortlink.yaml", "Path to config file.")
 	createConfig = flag.Bool("create_config", false, "If true, create example config file and exit.")
+	fVersion     = flag.Bool("version", false, "When true, print version and exit.")
 )
 
 func main() {
 	flag.Parse()
+
+	if *fVersion {
+		fmt.Fprintln(os.Stderr, version.Get())
+		os.Exit(0)
+	}
 
 	if *createConfig {
 		if err := config.CreateExample(*configPath); err != nil {

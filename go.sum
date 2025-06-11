@@ -12,6 +12,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/s5i/goutil/authn v0.0.0-20250611100915-08b0ce08f828 h1:Zs16P5Nweic0YgO9g+T0V2c098NqmlwvTE8RJEqfo5k=
 github.com/s5i/goutil/authn v0.0.0-20250611100915-08b0ce08f828/go.mod h1:9fIMMU2k0N4uBfZ3d1ghag/e3IxXCMEv1FI1EnwpHaM=
+github.com/s5i/goutil/version v0.0.0-20250611100915-08b0ce08f828 h1:Yhfo4VngwZ7I2EfJ5nqi6qlKwuPVVgYnBJFL05iQU+g=
+github.com/s5i/goutil/version v0.0.0-20250611100915-08b0ce08f828/go.mod h1:FlidXMMXterRF9aIaujNC44hH402/LPDOFocGzwM2zY=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
