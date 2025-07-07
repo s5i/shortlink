@@ -9,6 +9,7 @@ RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -C /src/ -o /build/shortlink.app 
 FROM alpine
 RUN apk add bash
 COPY --from=build /src/entrypoint.sh /app/entrypoint.sh
+COPY --from=build /src/example_config.yaml /app/example_config.yaml
 COPY --from=build /build/shortlink.app /app/shortlink.app
 VOLUME /cfg
 VOLUME /data

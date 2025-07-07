@@ -29,6 +29,9 @@ jobs:
           build-contexts: |
             github=.
           build-args: |
-            TAGVERSION=${{ github.ref }}
-          tags: shyym/shortlink:latest
-          push: true
+            TAGVERSION=${{ github.ref_name }}
+          tags: |
+            shyym/shortlink:latest
+            shyym/shortlink:${{ github.ref_name }}
+          load: ${{ vars.DOCKERHUB_LOAD }}
+          push: ${{ vars.DOCKERHUB_PUSH }}

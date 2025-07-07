@@ -1,20 +1,22 @@
 #!/bin/bash
 
-CONFIG_PATH="${PWD}/appdata/shortlink.yaml"
-DB_PATH="${PWD}/appdata/shortlink.db"
-INIT_PATH="${PWD}/appdata/REMOVE_AFTER_CONFIGURATION"
+BINARY="/app/tscanner.app"
+EXAMPLE_CONFIG="/app/example_config.yaml"
+CONFIG="/appdata/config.yaml"
+DB="/appdata/shortlink.db"
+SENTINEL="/appdata/SENTINEL.readme"
 
-if [[ ! -f ${CONFIG_PATH} ]]; then
-    touch "${INIT_PATH}"
-    $PWD/app/shortlink.app --config_path "${CONFIG_PATH}" --create_config
+if [[ ! -f ${CONFIG} ]]; then
+    echo "Remove this file after making necessary changes to ${CONFIG}" > "${SENTINEL}"
+    cp "${EXAMPLE_CONFIG}" "${CONFIG}"
 fi
 
-if [[ -f ${INIT_PATH} ]]; then
-    echo "Remove ${INIT_PATH} to start the service."
+if [[ -f ${SENTINEL} ]]; then
+    echo "Remove ${SENTINEL} to start the service."
 fi
-until [[ ! -f ${INIT_PATH} ]]; do
+until [[ ! -f ${SENTINEL} ]]; do
     sleep 5
 done
 
 echo "Starting the service..."
-$PWD/app/shortlink.app --config_path "${CONFIG_PATH}" --db_path "${DB_PATH}"
+$PWD/app/shortlink.app --config_path "${CONFIG}"

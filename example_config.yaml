@@ -1,5 +1,6 @@
 hostname: "example.com"
 listen: ":3000"
+database_path: "/appdata/shortlink.db"
 oauth_client_id: "<google app id here>.apps.googleusercontent.com"
 oauth_client_secret: "<google app secret here>"
 jwt_secret: "<your secret here>"
