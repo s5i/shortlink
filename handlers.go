@@ -41,12 +41,13 @@ func GetLink(db Database, defaultURL string) http.HandlerFunc {
 }
 
 func EditLink(a *authn.Authn, db Database) http.HandlerFunc {
-	return a.RequireUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, ok := a.User(r)
+	return a.RequireToken(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token, ok := a.Token(r)
 		if !ok {
 			http.Error(w, "user not authenticated", http.StatusUnauthorized)
 			return
 		}
+		user := UserFromToken(token)
 		isUser, err := db.IsUser(user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to read user whitelist: %v", err), http.StatusInternalServerError)
@@ -107,12 +108,13 @@ func EditLink(a *authn.Authn, db Database) http.HandlerFunc {
 }
 
 func ListLinks(a *authn.Authn, db Database) http.HandlerFunc {
-	return a.RequireUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, ok := a.User(r)
+	return a.RequireToken(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token, ok := a.Token(r)
 		if !ok {
 			http.Error(w, "user not authenticated", http.StatusUnauthorized)
 			return
 		}
+		user := UserFromToken(token)
 		isUser, err := db.IsUser(user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to read user whitelist: %v", err), http.StatusInternalServerError)
@@ -138,12 +140,13 @@ func ListLinks(a *authn.Authn, db Database) http.HandlerFunc {
 }
 
 func EditUsers(a *authn.Authn, db Database) http.HandlerFunc {
-	return a.RequireUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, ok := a.User(r)
+	return a.RequireToken(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token, ok := a.Token(r)
 		if !ok {
 			http.Error(w, "user not authenticated", http.StatusUnauthorized)
 			return
 		}
+		user := UserFromToken(token)
 		isAdmin, err := db.IsAdmin(user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to read admin list: %v", err), http.StatusInternalServerError)
@@ -191,6 +194,13 @@ func EditUsers(a *authn.Authn, db Database) http.HandlerFunc {
 			http.Error(w, "disallowed method", http.StatusBadRequest)
 		}
 	}))
+}
+
+func UserFromToken(a *authn.Token) string {
+	if a == nil {
+		return ""
+	}
+	return a.Issuer + "/" + a.ID
 }
 
 var editTmpl = template.Must(template.New("").Parse(`<!DOCTYPE html>

@@ -45,12 +45,12 @@ func main() {
 
 	mux := http.NewServeMux()
 	authn, err := authn.New(
-		authn.OptClientID(cfg.OAuthClientID),
-		authn.OptClientSecret(cfg.OAuthClientSecret),
+		authn.OptGoogleClientID(cfg.OAuthClientID),
+		authn.OptGoogleClientSecret(cfg.OAuthClientSecret),
+		authn.OptCallbackBasePath("/auth/callback"),
 		authn.OptJWTTTL(cfg.JWTTTL),
 		authn.OptHostname(cfg.Hostname),
 		authn.OptMux(mux),
-		authn.OptCallbackPath("/auth/callback"),
 	)
 	if err != nil {
 		log.Printf("failed to create authn: %v", err)
