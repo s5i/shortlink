@@ -7,5 +7,5 @@ jwt_secret: "<your secret here>"
 jwt_ttl: "24h"
 default_redirect_url: "http://example.com"
 admin:
-  - "admin@example.com"
-  - "admin2@example.com"
+  - "google/admin@example.com"
+  - "google/admin2@example.com"
